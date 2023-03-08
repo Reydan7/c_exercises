@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdlib.h> 
+#include <ctype.h> 
+
+#define MAX_STACK_SIZE 100
+
+int stack[MAX_STACK_SIZE];
+int top = -1;
+
+void push(int value) {
+    if (top >= MAX_STACK_SIZE - 1) {
+        exit(EXIT_FAILURE);
+    }
+    stack[++top] = value;
+}
+
+int pop() {
+    if (top < 0) {
+        exit(EXIT_FAILURE);
+    }
+    return stack[top--];
+}
+
+int calculate(char* postfix) {
+    int i = 0;
+    while (postfix[i] != '\0') {
+        if (isdigit(postfix[i])) {
+            int num = 0;
+            while (isdigit(postfix[i])) {
+                num = num * 10 + (postfix[i] - '0');
+                i++;
+            }
+            push(num);
+        } else if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/') {
+            int num1 = pop();
+            int num2 = pop();
+            switch (postfix[i]) {
+                case '+': push(num2 + num1); break;
+                case '-': push(num2 - num1); break;
+                case '*': push(num2 * num1); break;
+                case '/': push(num2 / num1); break;
+            }
+            i++;
+        } else {
+            i++;
+        }
+    }
+    return pop();
+}
+
+int main() {
+    char exp1[] = "5 3 * 1 3 2 - + +";
+    char exp2[] = "5 9 * 8 7 4 6 + * 2 1 3 * + * + *";
+    printf("Result 1: %d\n", calculate(exp1));
+    printf("Result 2: %d\n", calculate(exp2));
+    return 0;
+}
